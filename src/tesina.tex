@@ -1,0 +1,36 @@
+%%%%% Preamble %%%%%
+\documentclass[a4paper,11pt]{report}
+\author{Walter Mottinelli e Andrea Bo}
+\title{Trasformata $z$ e disposizione di poli e zeri\\ nei filtri FIR e IIR}
+\usepackage{latexsym}
+%\usepackage{makeidx} % to generate indexes
+%\makeindex
+\usepackage[italian]{babel}
+\usepackage{ucs} % unicode encoding
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx} % eps importing
+\pagestyle{headings}
+%\usepackage{fancyhdr}
+%\pagestyle{fanccy}
+%%%%%%%%%%%%%%%%%%%%
+                                                                           
+\begin{document}
+\maketitle
+\tableofcontents
+\begin{abstract}
+In questo documento viene presentata la trasformata $z$ e la disposizione di poli e zeri nel piano complesso. In relazione all'analisi numerica dei segnali, viene mostrata la correlazione tra il grafico poli/zeri di una funzione di trasferimento di un filtro e la risposta all'impulso dello stesso, con alcuni esempi di filtri FIR e IIR di uso comune.\\
+Gli esempi e le illustrazioni che accompagnano la trattazione sono realizzati in Scilab, un applicativo free per il calcolo numerico.
+\end{abstract}
+\newcommand{\Figdir}{images/}
+\include{math}
+\include{signal}
+\include{FIR}
+\include{IIR}
+\appendix
+\include{intro-scilab}
+\include{intro-scicos}
+\include{bibliografia}
+%\listoffigures
+\newpage
+Questo documento \`e stato scritto in \LaTeX e revisionato in data \today.
+\end{document}

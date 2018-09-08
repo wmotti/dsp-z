@@ -1,0 +1,117 @@
+\chapter{Disposizione di poli e zeri nei filtri IIR}
+I filtri IIR (Infinitive Impulse Response) sono filtri appartenenti alla sottoclasse dei sistemi LTI causali caratterizzati da una risposta infinita all'impulso.\\
+Questi filtri vengono rappresentati nel dominio delle frequenze con una funzione di trasferimento razionale in $z^{-1}$ della forma
+\begin{displaymath}
+H(z)=\frac{\sum_{k=0}^{M-1} b_kz^{-k}}{\sum_{k=0}^{L-1} a_kz^{-k}}
+\end{displaymath}
+Utilizzando Scilab, \`e possibile progettare un filtro IIR ed ottenerne i coefficienti grazie alla funzione \verb+iir+, dove
+\begin{itemize}
+\item l'ordine del filtro
+\item il tipo di filtro: \verb+lp+ (passa-basso), \verb+hp+ (passa-alto), \verb+bp+ (passa-banda), \verb+sb+ (taglia-banda)
+\item il corrispondente design analogico: \verb+butt+ (Butterworth), \verb+cheb1+ (Chebyschev, oscillazioni solo in banda passante), \verb+cheb2+ (Chebyschev, oscillazioni solo in banda proibita), \verb+ellip+ (ellittico)
+\item una o due frequenze di taglio, in base al tipo di filtro scelto
+\item gli errori ammessi nelle bande definite
+\end{itemize}
+
+\section{Filtri di Butterworth}
+I filtri di Butterworth sono caratterizzati da un discreto guadagno in banda passante, da un sufficiente guadagno in banda di transizione e da una fase non lineare ma comunque di discreta qualit\`a.\\
+La forma generale del modulo del filtro di Butterworth \`e del tipo
+\begin{displaymath}
+\frac{1}{\left|B_N \left(\frac{\omega}{\omega_c}\right)\right|}=\frac{1}{\sqrt{1+\left(\frac{\omega}{\omega_c}\right)^{2N}}}
+\end{displaymath}
+dove $N$ \`e l'ordine del filtro, $\omega_c$ \`e la frequenza di taglio e $B_N$ \`e il polinomio $N-esimo$ di Butterworth.\\
+Creiamo un filtro Butterworth passa-basso di ordine 3 con frequenza di taglio 0,15 e frequenza di stop 0,3.\\
+Il diagramma dei poli/zeri e della risposta in frequenza pu\`o essere ottenuto in Scilab con i seguenti comandi
+\begin{verbatim}
+// filtro BUTTERWORTH
+[hz]=iir(3,'lp','butt',[0.125 .3],[0.2 0.2]);
+[hzm,fr]=frmag(hz,100);
+xbasc();xset('window',0);
+// grafico risposta in frequenza
+plot2d(fr,hzm,rect=[0,0,.5,1.1]);
+xtitle(tit="",xax="frequenza",yax="|H(w)|")
+// grafico poli/zeri
+xset('window', 1);
+plzr(hz);
+\end{verbatim}
+Otteniamo cos\`i il risultato di figura \ref{Butterworth-fr} e figura \ref{Butterworth-pz}.
+
+\input{images/Butterworth-pz.tex}
+\dessin{Grafico poli/zeri del filtro di Butterworth}{Butterworth-pz}
+\input{images/Butterworth-fr.tex}
+\dessin{Risposta in frequenza del filtro di Butterworth}{Butterworth-fr}
+
+\section{Filtri di Chebyschev}
+La caratteristica principale dei filtri di Chebyschev \`e quella di distribuire l'accuratezza dell'approssimazione uniformemente lungo tutta la banda passante (tipo I) o quella proibita (tipo II) scegliendo un'approssimazione con oscillazioni della stessa ampiezza su tutta la banda.\\
+La forma generale del modulo del filtro di Chebyschev \`e del tipo
+\begin{displaymath}
+\frac{1}{\sqrt{1+\epsilon^2C^{2}_{N}\left(\frac{\omega}{\omega_c}\right)}}
+\end{displaymath}
+dove $N$ \`e l'ordine del filtro, $\omega_c$ \`e la frequenza di taglio, $\epsilon$ \`e una costante minore di 1 e $C_N$ \`e il polinomio $N-esimo$ di Chebyschev.
+\subsection{Filtro di Chebyschev - tipo I}
+Creiamo un filtro di Chebyschev taglia-banda di ordine 10 con frequenza di taglio di 0,2 e 0,35.\\
+Il diagramma dei poli/zeri e della risposta in frequenza pu\`o essere ottenuto in Scilab con i seguenti comandi
+\begin{verbatim}
+// filtro CHEBYTCHEV tipo I
+[hz]=iir(10,'sb','cheb1',[.2 .35],[0.1 0.1]);
+[hzm,fr]=frmag(hz,100);
+xbasc();xset('window',0);
+// grafico risposta in frequenza
+plot2d(fr,hzm,rect=[0,0,.5,1.1]);
+xtitle(tit="",xax="frequenza",yax="|H(w)|")
+// grafico poli/zeri
+xset('window', 1);
+plzr(hz);
+\end{verbatim}
+Otteniamo cos\`i il risultato di figura \ref{Chebyschev_1-fr} e figura \ref{Chebyschev_1-pz}.
+\input{images/Chebyschev_1-pz.tex}
+\dessin{Grafico poli/zeri del filtro di Chebyschev tipo I}{Chebyschev_1-pz}
+\input{images/Chebyschev_1-fr.tex}
+\dessin{Risposta in frequenza del filtro di Chebyschev tipo I}{Chebyschev_1-fr}
+
+\subsection{Filtro di Chebyschev - tipo II}
+Creiamo un filtro di Chebyschev passa-basso di ordine 8 con frequenza di taglio 0,15 e frequenza di stop 0,25.\\
+Il diagramma dei poli/zeri e della risposta in frequenza pu\`o essere ottenuto in Scilab con i seguenti comandi
+\begin{verbatim}
+// filtro CHSBYSCHEV tipo II
+[hz]=iir(8,'lp','cheb2',[.15 .25],[0.1 0.1]);
+[hzm,fr]=frmag(hz,1000);
+xbasc();xset('window',0);
+// grafico risposta in frequenza
+plot2d(fr,hzm,rect=[0,0,.5,1.05]);
+xtitle(tit="",xax="frequenza",yax="|H(w)|");
+// grafico poli/zeri
+xset('window', 1);
+plzr(hz);
+\end{verbatim}
+Otteniamo cos\`i il risultato di figura \ref{Chebyschev_2-fr} e figura \ref{Chebyschev_2-pz}.
+\input{images/Chebyschev_2-pz.tex}
+\dessin{Grafico poli/zeri del filtro Chebyschev tipo II}{Chebyschev_2-pz}
+\input{images/Chebyschev_2-fr.tex}
+\dessin{Risposta in frequenza del filtro Chebyschev tipo II}{Chebyschev_2-fr}
+
+\section{Filtri ellittici}
+I filtri ellittici sono caratterizzati da un ottimo guadagno sia in banda passante che in banda di transizione ma da una fase non lineare di pessima qualit\`a.\\
+La forma generale del modulo del filtro ellittico \`e del tipo
+\begin{displaymath}
+\frac{1}{\sqrt{1+\epsilon^2{R_n}^2(\omega)}}
+\end{displaymath}
+Creiamo un filtro ellittico passa-basso di ordine 4 con frequenza di taglio 0,15 e frequenza di stop 0,25.\\
+Il diagramma dei poli/zeri e della risposta in frequenza pu\`o essere ottenuto in Scilab con i seguenti comandi:
+\begin{verbatim}
+// filtro ELLITTICO
+[hz]=iir(4,'lp','ellip',[.15 .25],[0.1 0.1]);
+[hzm,fr]=frmag(hz,1000);
+xbasc();xset('window',0);
+// grafico risposta in freqenza
+plot2d(fr,hzm,rect=[0,0,.5,1.1]);
+xtitle(tit="",xax="frequenza",yax="|H(w)|");
+// grafico poli/zeri
+xset('window', 1);
+plzr(hz);
+\end{verbatim}
+Otteniamo cos\`i il risultato di figura \ref{Ellittico-fr} e figura \ref{Ellittico-pz}.\\
+\input{images/Ellittico-pz.tex}
+\dessin{Grafico poli/zeri del filtro Ellittico}{Ellittico-pz}
+\input{images/Ellittico-fr.tex} \dessin{Risposta in frequenza del filtro Ellittico}{Ellittico-fr}
+%\end{document}

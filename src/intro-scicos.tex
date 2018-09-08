@@ -1,0 +1,63 @@
+\chapter{Introduzione a Scicos}
+SCICOS (SCIlab Connected Object Simulator) \`e una libreria di Scilab che permette di simulare sistemi dinamici, sia continui che discreti e avvalendosi di un editor grafico permette di costruire modelli tramite l'interconnessione di blocchi.\\
+I blocchi rappresentano funzioni base o funzioni definibili dall'utente e agiscono come un sottosistema che viene attivato da un input e fornisce come output un segnale dipendente dall'ingresso e dal suo stato.\\
+In Scicos ad ogni segnale \`e associato un insieme di indici di tempo, detti istanti di attivazione, in cui evolve il segnale (per istanti non di attivazione il segnale rimane costante).\\
+I segnali vengono generati da blocchi pilotati da segnali di attivazione che portano il blocco ad adeguare la sua uscita in funzione dell'ingresso e del suo stato interno.
+
+\section{L'editor di Scicos}
+Per avviare l'editor grafico attivando la finestra principale di Scicos \`e necessario digitare \verb+scicos()+ dall'editor di Scilab; come si vedr\`a l'interfaccia grafica \`e intuitiva e permette di creare facilmente i diagrammi dei sistemi.\\
+Per costruire un modello in Scicos si eseguiranno tipicamente le seguenti operazioni:
+\begin{itemize}
+\item aprire il menu \verb+edit+ e cliccare sulla voce \verb+palettes+: verranno mostrate diverse categorie di blocchi che rappresentano le componenti tipiche dei sistemi
+\item copiare i blocchi nella finestra di Scicos, cliccando sul componente desiderato e posizionandolo sulla finestra principale con un altro click
+\item connettere le porte di input e output dei blocchi, cliccando semplicemente sulle porte che si desiderano collegare. Nel caso risultasse necessario biforcare l'uscita di un blocco per connetterla a pi\`u componenti si deve creare un nuovo link, scegliendone l'origine sul link da biforcare
+\item inserire nei diagrammi almeno un blocco per poter visualizzare o salvare gli esiti della simulazione, ad esempio \verb+Mscope+ o \verb+scrivi su file+
+\end{itemize}
+
+\section{Blocchi base}
+I blocchi base disponibili in Scicos sono di tre tipi:
+\begin{itemize}
+\item \verb+Regular Basic Block+ \\
+possono rappresentare variabli continue $x$ o discrete $z$;
+\item \verb+Zero Crossing Basic Block+ \\
+generano output solo se almeno un input regolare cambia segno.
+L'evento generato pu\`o dipendere dalla combinazione degli eventi che hanno cambiato segno;
+\item \verb+Synchro Basic Block+ \\
+blocchi di sincronizzazione; possono avere pi\`u input o output di attivazione, ma hanno un solo input regolare; appena ricevono in input un segnale di attivazione generano un segnale di attivazione in output scegliendo in base all'input regolare.
+\end{itemize}
+Ogni blocco pu\`o avere due tipi di porte sia di input sia di output:
+porte per input regolari, per input di attivazione, per output regolari e per output di attivazione.
+
+\section{Impostazione dei parametri delle componenti}
+I parametri dei blocchi possono essere modificati cos\`i da simulare fedelmente il sistema da realizzare. Per modificarli, \`e sufficiente cliccare due volte sul componente.
+
+\section{Simulazione}
+Una volta completato lo schema del sistema e dopo aver impostato i parametri di ogni blocco, selezionando l'opzione \verb+run+ dal men\`u \verb+simulate+ il programma comincia la simulazione in una nuova finestra.
+La simulazione pu\`o essere interrotta premendo il pulsante \verb+stop+ nella finestra principale.
+
+\section{Altre funzionalit\`a}
+\begin{itemize}
+\item salvare e caricare programmi Scicos
+\item modificare l'aspetto dei blocchi
+\item esportare e stampare i diagrammi e le simulazioni di Scicos
+\item interagire con codice C e Fortran
+\item interagire con file audio
+\item visualizzare l'help riguardante i blocchi (selezionare \verb+help+ e poi cliccare sul componente desiderato)
+\item modularizzare sistemi complessi in sub-sistemi, cos\`i da semplificare lo schema generale e favorire la riusabilit\`a delle componenti
+\end{itemize}
+
+\section{Esempio: simulazione di un filtro passa-basso}
+Al fine di dimostrare un possibile impiego di Scicos, realizziamo una simulazione di un segnale composto da due sinusoidi filtrato attraverso un filtro passa-basso:
+\begin{enumerate}
+\item inseriamo i due generatori di sinusoidi e li colleghiamo ad un sommatore, ottenendo cos\`i il segnale di input
+\item definiamo la funzione di trasferimento del filtro come rapporto tra due polinomi in $z$
+\item aggiungiamo un clock per attivare il sistema ad intervalli stabiliti
+\item poniamo in ingresso ad un oggetto \verb+MScope+ il segnale in ingresso prima e dopo il passaggio attraverso il filtro 
+\end{enumerate}
+\input{images/Schema_filtro_passa-basso.tex}
+\dessin{Esempio di schema Scicos}{Schema_filtro_passa-basso}
+
+Avviando la simulazione del sistema, si ottiene l'uscita in figura \ref{grafico-scicos}.
+
+\input{images/grafico-scicos.tex}
+\dessin{Segnale in input e segnale filtrato}{grafico-scicos}

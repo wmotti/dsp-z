@@ -1,0 +1,129 @@
+%%%%% Preamble %%%%%
+%\documentclass[a4paper,11pt]{report}
+%\usepackage[italian]{babel}
+%\usepackage{ucs} % unicode encoding
+%\usepackage[utf8]{inputenc}
+%\usepackage{graphicx} % eps importing
+%\pagestyle{headings}
+%%%%%%%%%%%%%%%%%%%%
+
+%\begin{document}
+
+\chapter{Introduzione a Scilab}
+\section{I fondamenti}
+Scilab \`e un applicativo scientifico Open Source per il calcolo numerico.\\
+I programmi vengono scritti ed interpretati riga dopo riga, non \`e quindi necessario definire a priori il tipo delle variabili utilizzate. Scilab \`e \emph{case sensitive}, bisogna quindi fare attenzione alla distinzione tra lettere maiuscole e minuscole.\\
+Bench\`e il programma supporti i cicli (for, while, \dots), \`e ottimizzato per i calcoli matriciali ed \`e quindi conveniente tenerne in considerazione in fase di impostazione del calcolo.
+\section{La riga di comando}
+Dalla riga di comando \`e possibile ottenere aiuto digitando \verb+help+ e il nome della funzione desiderata; se non ricordiamo il nome esatto, il comando \verb+apropos+ permette di ottenere un elenco di funzioni correlate.\\
+Scilab permette di scorrere le precedenti istruzioni tramite l'uso delle frecce della tastiera.\\
+I commenti nel codice sono preceduti da //.\\
+In un numero decimale, il carattere di separazione \`e il punto.\\
+Se non si desidera vedere i risultati di un inserimento, \`e possibile inserire un `;' alla fine dell'istruzione.\\
+Le costanti predefinite (pi, i, e, \ldots) sono precedute da \verb+%+.
+\section{Vettori e matrici}
+Vettori e matrici possono essere definiti in vari modi: 
+\begin{itemize}
+\item esplicitamente, racchiudendo gli elementi tra parentesi quadre e separandoli con il carattere `,' per i vettori riga (pu\`o essere omesso) e `;' per i vettori colonna;
+\item indicando l'elemento iniziale, l'elemento iniziale e il passo, con il seguente costrutto: \verb+(valore_iniziale,passo,valore_finale)+, il passo unitario e le parentesi possono essere omesse;
+\item per creare vettori e le matrici costituite esclusivamente da simboli `1' o `0', possono essere utilizzati i comandi \verb+ones(righe,colonne)+ o \verb+zeros(righe,colonne)+;
+\item le matrici con gli elementi unitari sulla diagonale possono essere create con il comando \verb+eye(a,b)+
+\end{itemize}
+
+Il carattere ' \`e l'operatore di trasposizione.
+L'operazione di moltiplicazione (rispettivamente divisione) elemento per elemento \`e rappresentanto da \verb+.*+ (\verb+./+), mentre vengono utilizzati i comuni operatori per le altre operazioni (\verb-+-, \verb+-+, \verb+*+, \verb+/+), ed \verb+e+ per le potenze di 10.
+
+Alcune comuni funzioni utili:
+\begin{itemize}
+\item \verb+sqrt()+ restituisce la radice quadrata
+\item \verb+sin()+, \verb+cos()+, \verb+tan()+ restituiscono il seno, conseno, tangente
+\item \verb+asin()+, \verb+acos()+, \verb+atan()+ restituiscono le funzioni inverse delle precedenti
+\item \verb+exp()+, \verb+log()+ restituiscono l'esponenziale e il logaritmo
+\item \verb+10\^()+, \verb+log()+ restituiscono le funzioni potenza e algoritmo di 10 
+\item \verb+real()+, \verb+imag()+ restituiscono le parti reali e immaginarie di un complesso
+\item \verb+abs ()+, \verb+phasemag()+ restituiscono il modulo e la fase di un complesso
+\end{itemize}
+
+
+Alcune funzioni utili per le matrici:
+\begin{itemize}
+\item la funzione \verb+matrix(v,n,m)+ restituisce una matrice (n,m) a partire dalla matrice v (qualunque dimensioni abbia)
+\item \verb+size(A)+ restituisce il numero di righe e colonne di A
+\item \verb+lenght(A)+ restituisce il numero di elementi di A
+\item \verb+sum(A)+ restituisce la somma di tutti gli elementi di A
+\item \verb+sum(A, `r')+ restituisce un vettore riga i cui elementi sono le somme delle colonne corrispondenti di A
+\item \verb+sum(A, `c')+ restituisce un vettore colonna i cui elementi sono le somme delle righe corrispondenti di A
+\item \verb+triu(A)+ restituisce una matrice i cui elementi sopra la diagonale (compresa) sono uguali a quelli della matrice A, nulli gli altri
+\item \verb+tril(A)+ restituisce una matrice i cui elementi sotto la diagonale (compresa) sono uguali a quelli della matrice A, nulli gli altri
+\item \verb+conj(A)+ restituisce la matrice complessa coniugata di A
+\end{itemize}
+
+Il valore di un vettore pu\`o essere ottenuto in vari modi:
+\begin{itemize}
+\item \verb+s(n)+ restituisce l'n-esimo elemento (l'indice parte da 1)
+\item \verb+s(a:p:b)+ restituisce gli elementi tra gli indici a e b con passo p
+\item \verb+s(a,b)+ restituisce l'elemento di posizione (a,b)
+\item \verb+s(:, b)+ restituisce tutta la colonna b
+\end{itemize}
+
+\section{Visualizzazione dei grafici}
+Le funzioni \verb+xbasc([numero_finestra])+ e \verb+xset("parametro",valore)+ inizializzano la finestra in cui verr\`a disegnato il grafico. Comuni parametri di \verb+xset+ sono \verb+font size+ e \verb+window+ (per attivare una finestra con il numero indicato), chiamando \verb+xset()+ senza parametri \`e possibile impostarli usando un'interfaccia grafica.
+
+\verb+plot2d(var_indipendente, var_dipendente, parametri)+ disegna il grafico bidimensionale corrispondente. Non esplicitando la variabile indipendente, il grafico verr\`a disegnato utilizzando gli indici sull'asse delle ascisse.
+Alcuni parametri comunemente usati:
+\begin{itemize}
+\item \verb+rett=[minY, minY, maxX, maxY]+ permette di restringere la rappresentazione del grafico nel dominio e nel codominio indicato
+\item \verb+style(x)+ definisce lo stile del tratto (i valori positivi di x rappresentano i colori, i valori negativi definiscono il tratteggio, la punteggiatura, l'uso del carattere `x' invece del tratto continuo)
+\item \verb+logflag"xy"+ definisce il tipo di scala sull'asse delle ascisse e delle ordinate, con possibilit\`a di scelta tra N (normale) o L (logaritmica)
+\item \verb+axesflags=[n]+ definisce le caratteristiche degli assi
+\end{itemize}
+
+In alcune circostanze, si ottengono migliori risultati utilizzando \verb+plot2d2+ (con funzioni costanti a tratti) o \verb+plot2d3+ (in presenza di rette del tipo $x=k$, le altre funzioni di disegno 2D tracciano un triangolo, mentre questa traccia una riga netta).
+Altre funzioni comunemente utilizzate:
+\begin{itemize}
+\item \verb+xtitle("titolo","asse_ascisse","asse_ordinate")+ permette di inserire il titolo e le legende sugli assi del grafico per chiarirne il significato.
+\item \verb+xstring(x_bg, y_bg, [ "line 1"; "line 2"; ....])+ permette di aggiungere testo nella posizione indicata.
+\item \verb+xarrows([xp1,xa1,xp2,xa2],[yp1,ya1,yd2,ya2])+ permette di aggiungere frecce al grafico (indicato le coordinate di partenza e di arrivo).
+\item \verb+xarc(x,y,w,h,a1,a2)+ permette di disegnare un'ellisse contenuta nel rettangolo di vertice superiore sinistro \verb+(x,y)+, larghezza \verb+(w)+, altezza \verb+(h)+ e nel settore definito dagli angoli \verb+a1+ e \verb+a2+ (espressi in 64-esimi di grado) 
+\item \verb+xgrid(n)+ permette di aggiungere una griglia, e il parametro n ne definisce lo stile.
+\item \verb+xsetech([x0,y0,largh,alt])+ imposta la visualizzazione del grafico nel rettangolo con vertice sinistro inferiore di coordinate (x0,y0), larghezza largh e altezza alt (i parametri x0, y0, largh e alt sono espressi con valori tra 0 e 1).
+\end{itemize}
+
+\section{Salvataggio e ripristino dell'ambiente di lavoro}
+
+Scilab mette a disposizione le funzioni \verb+save+ e \verb+load+ per salvare e ripristinare successivamente le variabili create in un file binario.\\
+Se invece il codice viene memorizzato in un file esterno, \`e possibile eseguirlo con la funzione \verb+exec+.
+
+\section{Programmazione}
+
+Scilab mette a disposizione i costrutti tipici di altri linguaggi di programmazione, ad esempio i cicli \verb+for+, \verb+while+, \verb+if+\ldots \verb+then+ \ldots \verb+else+, \verb+select+\ldots \verb+box+. Normalmente \`e computazionalmente pi\`u conveniente sostituire il ciclo con una matrice algebrica.
+
+Scilab permette infine di definire nuove funzioni secondo la sintassi:
+\verb+funzione[y1, y2 ... yn] = nome_della_funzione(x1, x2 ...  xm)+
+
+\section{Polinomi e funzioni di trasferimento}
+
+Un polinomio viene descritto in due possibili modi:
+\begin{itemize}
+\item \verb+poly([{radici}],'p')+ se sono note le radici
+\item \verb+poly([{coeff}],'p','c')+ se sono noti i coefficienti (che devono essere elencati a partire da quello di grado 0)
+\end{itemize}
+La funzione \verb+roots(p)+ consente di ottenere le radici del polinomio $p$, mentre \verb+horner(P,x)+ permette di valutare il polinomio quando la variabile in cui \`e definito assume valore $x$.
+
+\section{Funzioni per l'analisi numerica dei segnali}
+Ecco infine una rassegna delle pi\`u comuni funzioni utilizzate nell'analisi numerica dei segnali. Per la sintassi precisa fare riferimento al comando \verb+help <nome_comando>+.
+\begin{itemize}
+\item \verb+syslin+ permette di definire un sistema lineare dati due polinomi (spesso il numeratore ed il denominatore della funzione di trasferimento) o la funzione di trasferimento stessa. Il sistema lineare pu\`o cos\`i essere manipolato come una comune matrice (concatenazione, estrazione, trasposta, moltiplicazione, \dots)
+\item \verb+plzr+ visualizza un grafico poli/zeri della funzione di trasferimento passata in ingresso come un sistema lineare
+\item \verb+roots+ restituisce le radici del polinomio in ingresso
+\item \verb+trzeros+ resituisce gli zeri del sistema lineare in ingresso
+\item \verb+freq(num,den,f)+, data la funzione di trasferimento del filtro (espressa come numeratore e denominatore) e il segnale in ingresso, restituisce la risposta in frequenza come matrice reale o complessa
+\item \verb+frmag(num[,den],num_punti)+ restituisce la risposta in frequenza del filtro in una matrice di due colonne: la colonna dei punti nel dominio frequenziale su cui \`e valutata la magnitudine della risposta in frequenza, e la colonna dei valori corrispondenti
+\item \verb+bode+ restituisce il grafico di Bode (magnitudine e fase) della risposta in frequenza del sistema lineare in ingresso
+\item \verb+gainplot+ agisce come \verb+bode+, ma restituisce solo la magnitudine
+\item \verb+freq(P,x)+ valuta il polinomio P quando la variabile ha valore x (x pu\`o essere un numero reale o un polinomio)
+\item \verb+wfir(tipo_fil,ordine,freq_taglio,tipo_fin,parametri_fin)+ restituisce i coefficienti del filtro FIR a fase lineare realizzato con il metodo delle finestre
+\item \verb+eqfir(num_punti_uscita,bande,magnitudine_bande,peso_bande)+ restituisce i coefficienti del filtro FIR multibanda a fase lineare realizzato con il metodo di approssimazione minimax
+\item \verb+iir(n,tipo,design,freq_taglio,errori)+ restituisce i coefficienti del filtro IIR realizzato secondo le specifiche fornite
+\end{itemize}
+%\end{document}

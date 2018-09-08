@@ -1,0 +1,231 @@
+%%%%% Preamble %%%%%
+%\documentclass[a4paper,11pt]{article}
+%\author{Walter Mottinelli}
+%\title{Elaborazione numerica dei segnali con Scilab}
+%\usepackage{latexsym}
+%\usepackage{makeidx} % to generate indexes
+%\usepackage[italian]{babel}
+%\usepackage{ucs} % unicode encoding
+%\usepackage[utf8]{inputenc}
+%\usepackage{graphicx} % eps importing
+%\pagestyle{headings}
+%\newcommand{\Figdir}{images/}
+%%%%%%%%%%%%%%%%%%%%
+                                                                           
+%\begin{document}
+%\newcommand{\Figdir}{images/}
+%\maketitle
+%\tableofcontents
+%\begin{abstract}
+%\end{abstract}
+
+\chapter{Disposizione di poli e zeri nei filtri FIR}
+I filtri FIR sono listemi LTI aventi risposta finita all'impulso e sono rappresentati da un polinomio in $z^{-1}$:
+\begin{displaymath}
+H(z)=\sum_{k=0}^{M-1}h(k)z^{-k}
+\end{displaymath}
+Il diagramma poli/zeri corrispondente presenta un polo in $z=0$, quindi interno alla circonferenza di raggio unitario: i filtri FIR sono sempre causali e stabili, inoltre hanno fase lineare se la funzione di risposta all'impulso \`e simmetrica o antisimmetrica.\\
+Vediamone qualche esempio, usando Scilab come strumento di analisi.
+
+\section{Filtro con uno zero sulla circonferenza unitaria}
+Verifichiamo innanzitutto che uno zero in $z=e^{i\omega_0}$ modifica la risposta in frequenza azzerandola nella frequenza corrispondente a $\omega_0$.
+Un filtro di questo tipo ha la funzione di trasferimento $H(z)=\frac{1-z^{-1}}{z^{-1}}$ e il diagramma poli/zeri pu\`o essere ottenuto in Scilab con i seguenti comandi:
+\begin{verbatim}
+// inizializziamo il sistema
+clear;
+// creiamo la funzione di trasferimento:
+// definiamo il vettore di coefficienti del numeratore
+numcoeff=[1 -1];
+// creiamo il polinomio al numeratore
+num=poly(numcoeff,'z','c');
+// definiamo il vettore di coefficienti del denominatore
+dencoeff=[0 1];
+// creiamo il polinomio al denominatore
+den=poly(dencoeff,'z','c');
+// creiamo la funzione di trasferimento
+combsl=syslin('d',num,den);
+// inizializziamo la finestra grafica
+xbasc();
+// visualizziamo il grafico poli/zeri
+plzr(combsl);
+\end{verbatim}
+Otteniamo il risultato di figura \ref{fir-1zero-pz}.
+\input{images/fir-1zero-pz.tex}
+\dessin{Grafico poli/zeri}{fir-1zero-pz}
+
+Calcoliamo ora la risposta in frequenza:
+\begin{verbatim}
+// definiamo il range discreto delle frequenze
+f=(-.5:.001:.5);
+// calcoliamo la risposta in frequenza
+hf=freq(num,den,exp(2*%pi*%i*f));
+// visualizziamo il grafico
+xbasc(); plot2d(f,abs(hf))
+\end{verbatim}
+Il filtro ha la risposta in frequenza attesa, come dimostra il grafico \ref{fir-1zero-fr}.
+\input{images/fir-1zero-fr.tex}
+\dessin{Risposta in frequenza}{fir-1zero-fr}
+
+\section{Filtri COMB}
+Un filtro COMB di ordine M ha funzione di trasferimento 
+\begin{displaymath}
+H(z)=\frac{1}{M}(1-z^{-M})
+\end{displaymath}
+In Scilab, il suo diagramma poli/zeri pu\`o essere ottenuto con i seguenti comandi:
+\begin{verbatim}
+// inizializziamo il sistema
+clear;
+// creiamo la funzione di trasferimento:
+// definiamo il vettore di coefficienti del numeratore
+numcoeff=[-1 0 0 0 0 0 0 0 1];
+// creiamo il polinomio al numeratore
+num=poly(numcoeff,'z','c');
+// definiamo il vettore di coefficienti del denominatore
+dencoeff=[0 0 0 0 0 0 0 0 8];
+// creiamo il polinomio al denominatore
+den=poly(dencoeff,'z','c');
+// creiamo la funzione di trasferimento come sistema lineare
+combsl=syslin('d',num,den);
+// inizializziamo la finestra grafica
+xbasc();
+// visualizziamo il grafico poli/zeri
+plzr(combsl);
+\end{verbatim}
+Otteniamo il risultato rappresentanto nella figura \ref{fir-comb8-pz}.
+\input{images/fir-comb8-pz.tex}
+\dessin{Grafico poli/zeri di un filtro COMB di ordine 8}{fir-comb8-pz}
+
+La risposta in frequenza pu\`o essere determinata con i seguenti comandi:
+\begin{verbatim}
+// definiamo il range discreto delle frequenze
+f=(-.5:.001:.5);
+// calcoliamo la risposta in frequenza
+hf=freq(num,den,exp(2*%pi*%i*f));
+// inizializziamo la finestra grafica e 
+// visualizziamo la risposta in frequenza
+xbasc(); plot2d(f,abs(hf))
+\end{verbatim}
+Il grafico \`e mostrato in figura \ref{fir-comb8-fr}.
+\input{images/fir-comb8-fr.tex} 
+\dessin{Risposta in frequenza di un filtro COMB di ordine 8}{fir-comb8-fr}
+
+\subsection*{Filtro passa-basso implementato con un filtro COMB}
+\`E possibile modificare un filtro COMB in modo da filtrare determinate frequenze ed utilizzarlo quindi come un comune filtro passa-basso o passa-alto di facile implementazione ma scarsa efficacia.
+Proviamo ad esempio ad eliminare il polo in $z=1$: la funzione di trasferimento del filtro ottenuto sar\`a
+\begin{displaymath}
+H(z)=\frac{1}{8} \frac{z^8 -1}{z^7 -z^6}
+\end{displaymath}
+Costruiamo il grafico poli/zeri di figura \ref{fir-comb8-lp-pz}:
+\begin{verbatim}
+clear;
+numcoeff=[-1 0 0 0 0 0 0 0 1];
+num=poly(numcoeff,'z','c');
+dencoeff=[0 0 0 0 0 0 0 -1/8 1/8];
+den=poly(dencoeff,'z','c');
+combsl=syslin('d',num,den);
+xbasc();plzr(combsl);
+\end{verbatim}
+\input{images/fir-comb8-lp-pz.tex}
+\dessin{Grafico poli/zeri di un filtro passa-basso implementato con un filtro COMB di ordine 8}{fir-comb8-lp-pz}
+
+La corrispondente risposta in frequenza si ottiene con i comandi 
+\begin{verbatim}
+f=(-.5:.001:.5);
+hf=freq(num,den,exp(2*%pi*%i*f));
+xbasc(); xset("font size",4); plot2d(f,abs(hf))
+\end{verbatim}
+ed \`e mostrata nella figura \ref{fir-comb8-lp-fr}.
+\input{images/fir-comb8-lp-fr.tex}
+\dessin{Risposta in frequenza di un filtro passa-basso implementato con un filtro COMB di ordine 8}{fir-comb8-lp-fr}
+
+\section{Filtri realizzati con il metodo delle finestre}
+Progettiamo un filtro con il metodo delle finestre: grazie a Scilab, \`e facile ottenerne i coefficienti usando la funzione \verb+wfir+, che richiede come parametri
+\begin{itemize}
+\item il tipo di filtro: \verb+lp+ (passa-basso), \verb+hp+ (passa-alto), \verb+bp+ (passa-banda), \verb+sb+ (taglia-banda)
+\item l'ordine del filtro
+\item una o due frequenze di taglio, in base al tipo di filtro scelto
+\item il tipo di finestra da applicare: \verb+re+ (rettangolare), \verb+tr+ (triangolare), \verb+hm+ (Hamming), \verb+hn+ (Hanning), \verb+kr+ (Kaiser), \verb+ch+ (Chebyshev)
+\item i parametri della finestra scelta  
+\end{itemize}
+e restituisce in output
+\begin{itemize}
+\item i coefficienti del filtro nel dominio del tempo
+\item la risposta del filtro nel dominio della frequenza
+\item i punti del dominio della frequenza nei quali la risposta viene valutata
+\end{itemize}
+Vediamone un paio di esempi.
+
+\subsection*{Filtro passa-basso realizzato con una finestra rettangolare}
+Creiamo un filtro passa-basso di ordine 20 con frequenza di taglio pari a 0.3 utilizzando una finestra rettangolare:
+\begin{verbatim}
+clear;
+[valcoeff,filtamp,filtfreq]=wfir('lp',20,[.3 0],'re',[0 0]);
+num=poly(valcoeff,'z','c');
+xbasc();
+// la funzione 'horner' valuta il polinomio num in 1/z
+plzr(horner(num,1/%z));
+\end{verbatim}
+Il grafico poli/zeri risultante \`e mostrato in figura \ref{fir-wfir-lp-rect-pz}.
+\input{images/fir-wfir-lp-rect-pz.tex}
+\dessin{Grafico poli/zeri di un filtro passa-basso di ordine 20 realizzato con una finestra rettangolare}{fir-wfir-lp-rect-pz}
+
+La risposta in frequenza (figura \ref{fir-wfir-lp-rect-fr}) pu\`o essere ottenuta con le seguenti istruzioni:
+\begin{verbatim}
+xbasc(); plot2d(filtfreq,filtamp);
+\end{verbatim}
+\input{images/fir-wfir-lp-rect-fr.tex}
+\dessin{Risposta in frequenza di un filtro passa-basso di ordine 20 realizzato con una finestra rettangolare}{fir-wfir-lp-rect-fr}
+
+\subsection*{Filtro passa-banda realizzato con una finestra di Hamming}
+Creiamo un filtro passa-banda di ordine 20 con frequenze di taglio pari a 0.2 e 0.37 utilizzando una finestra di Hamming:
+\begin{verbatim}
+clear;
+[coeff,amp,freq]=wfir('bp',20,[.2 .37],'hm',[0 0]);
+num=poly(coeff,'z','c');
+xbasc(); plzr(horner(num,1/%z));
+\end{verbatim}
+Il grafico poli/zeri del filtro corrispondente \`e mostrato in figura \ref{fir-wfir-bp-hm-pz}.
+\input{images/fir-wfir-lp-rect-pz.tex}
+\dessin{Grafico poli/zeri di un filtro passa-banda di ordine 20 realizzato con una finestra di Hamming}{fir-wfir-bp-hm-pz}
+
+La risposta in frequenza (figura \ref{fir-wfir-bp-hm-fr}) pu\`o essere ottenuta con le seguenti istruzioni:
+\begin{verbatim}
+xbasc(); plot2d(freq,amp);
+\end{verbatim}
+\input{images/fir-wfir-bp-hm-fr.tex}
+\dessin{Risposta in frequenza di un filtro passa-banda di ordine 20 realizzato con una finestra di Hamming}{fir-wfir-bp-hm-fr}
+
+\section{Filtro passa-alto realizzato con il metodo minimax}
+Progettiamo un filtro con il metodo dell'approssimazione minimax: grazie a Scilab, \`e facile ottenerne i coefficienti usando la funzione \verb+eqfir+, che richiede come parametri
+\begin{itemize}
+\item il numero dei punti di cui sar\`a composto il filtro risultante 
+\item $M$ coppie di frequenze delimitanti le $M$ bande
+\item $M$ magnitudini, un valore per ciascuna banda
+\item $M$ valori rappresentanti il peso relativo dell'errore in ciascuna banda
+\end{itemize}
+e restituisce in output i coefficienti del filtro.\\
+Vediamone un esempio: progettiamo un filtro di 33 elementi, con banda azzerata nell'intervallo (0, .22) e passante nell'intervallo (.25, .5).
+
+\begin{verbatim}
+clear;
+// cerchiamo i coefficienti del filtro richiesto
+hn=eqfir(33,[0 .22;.24 .5],[0 1],[.1 1]);
+// creiamo ora la funzione di trasferimento 
+filter=poly(hn,'z','c');
+\end{verbatim}
+Ottenuta la funzione di trasferimento, procediamo nel consueto modo per ottenere il grafico poli/zeri:
+\begin{verbatim}
+xbasc(); plzr(horner(filter,1/%z)); 
+\end{verbatim}
+Il risultato \`e visualizzato in figura \ref{fir-minimax-hp-pz}.
+\input{images/fir-minimax-hp-pz.tex}
+\dessin{Grafico poli/zeri di un filtro passa-alto realizzato con il metodo di approssimazione minimax}{fir-minimax-hp-pz}
+La risposta in frequenza \`e calcolato con le seguenti righe di codice:
+\begin{verbatim}
+[hm,fr]=frmag(hn,256);
+xbasc(); plot2d(fr,hm);
+\end{verbatim}
+Il suo grafico \`e in figura \ref{fir-minimax-hp-fr}.
+\input{images/fir-minimax-hp-fr.tex}
+\dessin{Risposta in frequenza di un filtro passa-alto realizzato con il metodo di approssimazione minimax}{fir-minimax-hp-fr}
+

@@ -1,0 +1,415 @@
+%%%%% Preamble %%%%%
+%\documentclass[a4paper,11pt]{article}
+%\author{Walter Mottinelli}
+%\title{Elaborazione numerica dei segnali con Scilab}
+%\usepackage{latexsym}
+%\usepackage{makeidx} % to generate indexes
+%\usepackage[italian]{babel}
+%\usepackage{ucs} % unicode encoding
+%\usepackage[utf8]{inputenc}
+%\usepackage{graphicx} % eps importing
+%\pagestyle{headings}
+%%%%%%%%%%%%%%%%%%%%
+                                                                           
+%\begin{document}
+%\maketitle
+%\tableofcontents
+%\begin{abstract}
+%\end{abstract}
+
+\chapter{La trasformata $z$}
+La trasformata $z$ \`e uno dei principali strumenti matematici per l'analisi e la sintesi di filtri digitali. Trova infatti applicazione in alcune importanti problematiche, ad esempio:
+\begin{itemize}
+\item \emph{Calcolo della funzione di trasferimento del sistema} \\
+La funzione di trasferimento di un filtro \`e la trasformata $z$ della sua risposta all'impulso. \\
+Il piano complesso $z$ \`e utilizzato per mostrare la configurazione dei poli e degli zeri della funzione di trasferimento: la loro disposizione, come vedremo, \`e indice di importanti propriet\`a del sistema.\\
+Inoltre, i coefficienti del filtro digitale possono essere ricavati direttamente a partire dalla funzione di trasferimento.
+\item \emph{Calcolo delle trasformate di Fourier} \\
+La trasformata di Fourier corrisponde al calcolo della trasformata $z$ lungo la circonferenza di raggio unitario con centro nell'origine degli assi del piano complesso $z$. In particolare, la versione discreta delle trasformata di Fourier viene valutata su insiemi di punti equidistanti tra loro.
+\end{itemize}
+\section{Definizione matematica}
+La trasformata $z$ di una sequenza $\{h[n]\}$ \`e definita dalla funzione nella variabile $z$ a valori complessi
+\begin{displaymath}
+H(z) = \sum_{n=-\infty}^\infty h(n)z^{-n}
+\end{displaymath}
+e dalla regione di convergenza, luogo dei punti in cui la sommatoria \`e finita. \\
+Se la sequenza $\{h[n]\}$ in esame \`e la risposta all'impulso di un filtro digitale, $H(n)$ viene chiamata \emph{funzione di trasferimento del sistema}.
+\subsection*{Esempio di calcolo della trasformata $z$}
+Sia data la funzione
+\begin{displaymath}
+h(n)=r^n cos(\omega_0 n)
+\end{displaymath}
+per $n\ge 0$, la cui trasformata $z$ \`e uguale a 
+\begin{displaymath}
+H(z)=\sum_{n=0}^\infty r^n cos(\omega_0 n)z^{-n}
+\end{displaymath}
+Applicando la formula
+\begin{displaymath}
+cos \omega = \frac{e^{i\omega n} + e^{-i\omega n}}{2}
+\end{displaymath}
+derivata dall'identit\`a di Eulero $e^{i\omega}=cos\omega + isen\omega$ 
+e la formula della somma infinita di elementi di una serie geometrica\\
+$\sum_{n=0}^\infty a^n = \frac{1}{1-a}$ per $|a|<1$ \\
+otteniamo:
+\begin{eqnarray*}
+H(z) & = & \sum_{n=0}^\infty r^{n} \frac{e^{i\omega_0 n}+e^{-i\omega_0 n}}{2}z^{-n}\\
+     & = & \frac{1}{2} \left [ \sum_{n=0}^\infty (re^{i\omega_0 n}z^{-1})^n + \sum_{n=0}^\infty (re^{-i\omega_0 n}z^{-1})^n\right ] \\
+     & = & \frac{1}{2} \left [ \frac{1}{1-re^{i \omega_0}z^{-1}} + \frac{1}{1-re^{-i \omega_0}z^{-1}} \right ]\\
+     & = & \frac{1}{2} \left [ \frac{2-r(e^{i\omega_0}+e^{-i\omega_0}z^{-1})}{(1-re^{i \omega_0}z^{-1})(1-re^{-i \omega_0})z^{-1}} \right ] \\
+     & = & \frac{1-rcos(\omega_0)z^{-1}}{1-2rcos(\omega_0)z^{-1}+r^2 z^{-2}}
+\end{eqnarray*}
+
+\section{Propriet\`a della trasformata $z$}
+\begin{itemize}
+\item linearit\`a\\ se $\{x(n)\}=\{ah_1(n)+bh_2(n)\}$, allora $X(z)=aH_1(z)+bH_2(z)$
+\item traslazione\\ se $\{y(n)\}=\{x(n-n_0)\}$, allora $Y(z)=z^{-n_0}X(z)$
+\item convoluzione\\ se $\{y(n)\}=\{h(n)\}\ast\{x(n)\}$, allora $Y(z)=H(z)X(z)$
+\item scalatura (nel dominio $z$)\\ se $\{y(n)\}=\{a^n x(n)\}$, allora $Y(z)=X(a^{-1} z)$
+\item derivazione (nel dominio $z$)\\ se $\{y(n)\}=\{nx(n)\}$, allora $Y(z)=z^{-1} \frac{dX}{dz^{-1}}$
+\end{itemize}
+
+\section{Trasformate $z$ comuni}
+\begin{tabular}{l|l|l}
+
+Segnale & Trasformata $z$ & ROC \\
+\hline
+$\delta [n]$ & $1$ & $\forall z$ \\
+$\delta [n-k]$ & $z^{-k}$ & $\forall z$, con $z\ne 0$ se $k>0$ \\
+$\delta [n-k]$ & $z^{-k}$ & $\forall z$, con $z\ne \infty$ se $k<0$ \\
+$u[n]$ & $\frac{z}{z-1}$ & $|z| > 1$ \\ 
+$-(u[-n-1])$ & $\frac{z}{z-1}$ & $|z| < 1$ \\
+$nu[n]$ & $\frac{z}{(z-1)^2}$ & $|z| > 1$ \\
+$n^2 u[n]$ & $\frac{z(z+1)}{(z-1)^3}$ & $|z| > 1$ \\
+$n^3 u[n]$ & $\frac{z(z^2 +4z +1)}{(z-1)^4}$ & $|z| > 1$ \\
+$\left ( -\left(\alpha^n\right ) \right)u[-n-1]$ & $\frac{z}{z-\alpha}$ & $|z|<|\alpha|$ \\
+$\alpha^n u[n]$ & $\frac{z}{z-\alpha}$ & $|z|>|\alpha|$ \\
+$n\alpha^n u[n]$ & $\frac{\alpha z}{(z-\alpha)^2}$ & $|z|>|\alpha|$ \\
+$n^2\alpha^n u[n]$ & $\frac{\alpha z(z+\alpha)}{(z-\alpha)^3}$ & $|z|>|\alpha|$ \\
+$\frac{\prod_{k=1}^m (n-k+1)}{\alpha^m m!}\alpha^n u[n]$ & $\frac{z}{(z-\alpha)^{m+1}}$ \\
+$\gamma^n cos(\alpha n)u[n]$ & $\frac{z(z-\gamma cos(\alpha))}{z^2 - (2\gamma cos(\alpha))z+\gamma^2}$ & $|z|>|\alpha|$ \\
+$\gamma^n sen(\alpha n)u[n]$ & $\frac{z\gamma sen(\alpha)}{z^2 - (2\gamma cos(\alpha))z+\gamma^2}$ & $|z|>|\alpha|$
+\end{tabular}
+
+\section{Poli e zeri}
+La trasformata $H(z)$ \`e una funzione nella variabile a valori complessi $z$, che pu\`o essere rappresentanta su un piano con la parte reale sull'asse delle ascisse e la parte immaginaria sull'asse delle ordinate.
+Alcuni punti del piano complesso hanno particolare importanza:
+\begin{itemize}
+\item gli \emph{zeri} sono i punti in cui $H(z)=0$ 
+\item i \emph{poli} sono i punti in cui $H(z)=\infty$
+\end{itemize}
+Con un grafico tridimensionale \`e possibile evidenziare il comportamento della trasformata in questi punti: in figura \ref{pole-zero-3D} \`e rappresentato in funzione di $\Re(z)$ e $\Im(z)$ il modulo di $H(z)=z^{-1}-1$, che ha uno zero in $z=1$ (l'avvallamento) e un polo in $z=0$ (il picco).
+\input{images/pole-zero-3D.tex}
+\dessin{Modulo di $H(z)=z^{-1}-1$ in funzione di $\Re(z)$ e $\Im(z)$}{pole-zero-3D}
+
+Poli e zeri possono essere indicati esplicitamente nell'equazione di $H(z)$: consideriamo ad esempio una funzione di trasferimento di un segnale digitale, normalmente rappresentata come rapporto di somme di prodotti
+\begin{displaymath}
+H(z)=\frac{\sum_{k=-N_F}^{N_P} {b_k}z^{-k}} {1-\sum_{k=1}^Ma_kz^{-k}}
+\end{displaymath}
+dove 
+\begin{itemize}
+\item $N_F$ \`e il numero dei campioni in input successivi a quello in esame;
+\item $N_P$ \`e il numero dei campioni in input precedenti quello in esame;
+\item $M$  \`e il numero dei campioni in output precedenti quello in esame.
+\end{itemize}
+A partire da questa equazione \`e possibile passare ad un rapporto di prodotti di termini 
+\begin{displaymath}
+H(z)=Az^{N_F} \frac{\prod_{k=1}^{N_P+N_F}(1-c_k z^{-1})}{\prod_{k=1}^M (1-d_k z^{-1})}
+\end{displaymath}
+dove 
+\begin{itemize}
+\item A \`e una costante reale;
+\item $c_k$, per $1\leq k \leq N_P + N_F$, \`e il valore (eventualmente complesso) del $k-esimo$ zero;
+\item $d_k$, per $1\leq k \leq M$, \`e il valore del $k-esimo$ polo.
+\end{itemize}
+Alcune considerazioni sulla seconda rappresentazione:
+\begin{itemize}
+\item ogni fattore del numeratore ($1-c_kz^{-1}$) genera uno zero in $z=c_k$ e un polo in $z=0$;
+\item ogni fattore del denominatore genera un polo in $z=d_k$ e uno zero in $z=0$;
+\item nel punto $z=0$, poli dei fattori del numeratore cancellano zeri dei fattori del denominatore;
+\item considerando anche i punti di singolarit\`a in $z=\infty$, il numero dei poli \`e \emph{sempre} pari al numero degli zero.
+\end{itemize}
+In sintesi, la disposizione dei poli e degli zeri della trasformata $z$ data nella forma 
+\begin{displaymath}
+H(z)=Az^{N_F} \frac{\prod_{k=1}^{N_P+N_F}(1-c_k z^{-1})}{\prod_{k=1}^M (1-d_k z^{-1)}}
+\end{displaymath}
+\`e la seguente:
+\begin{itemize}
+\item zeri in:
+\begin{itemize}
+\item $z=c_k$ \qquad per $1\leq k \leq N_P + N_F$
+\item $z=0\textrm{ }$ \qquad di molteplicit\`a $M$
+\item $z=0\textrm{ }$ \qquad di molteplicit\`a $N_F$
+\end{itemize}
+\item poli in:
+\begin{itemize}
+\item $z=d_k$ \qquad per $1\leq k \leq M$
+\item $z=0\textrm{ }$ \qquad di molteplicit\`a $N_P + N_F$
+\item $z=\infty$ \qquad di molteplicit\`a $N_F$
+\end{itemize}
+\end{itemize}
+
+\subsection*{Esempio 1}
+\begin{eqnarray*}
+H(z) & = & \frac{1-rcos\left (\omega_0\right )z^{-1}}{1-2rcos{\omega_0}z^{-1}+r^2 z^{-2}} \\
+     & = & \frac{1-rcos\left (\omega_0\right )z^{-1}}{1-r\left (e^{i\omega_0}+e^{-i\omega_0}\right )z^{-1}+r^2 z^{-2}} \\
+     & = & \frac{1-rcos\left (\omega_0\right )z^{-1}}{\left (1-re^{i\omega_0}z^{-1}\right )\left (1-re^{-i\omega_0}z^{-1}\right )}
+\end{eqnarray*}
+Il numeratore genera uno zero in $z=rcos(\omega_0)$ e un polo in $z=0$, mentre il denominatore genera due zeri in $z=0$ e un polo in $z=re^{\pm i \omega_0}$.
+
+\subsection*{Esempio 2 - singolarit\`a di second'ordine}
+\begin{eqnarray*}
+H(z) & = & z^2 + 2z + 3 + 2z^{-1} + z^{-2} \\
+     & = & \left (z + 1 + z^{-1} \right )^2 \\
+     & = & z^2 \left (1-c_1 z^{-1}\right )^2\left (1-c_2 z^{-1}\right )^2
+\end{eqnarray*}
+dove
+\begin{eqnarray*}
+c_1 & = & \frac{-1 + i\sqrt{3}}{2} = e^{-i2\pi/3} \\
+c_2 & = & \frac{-1 - i\sqrt{3}}{2} = e^{-i2\pi/3}
+\end{eqnarray*}
+Il primo fattore genera due poli in $z=\infty$ e due zeri in $z=0$.
+I due fattori contenenti $z^{-1}$ generano ciascuno due zeri in $z=c_1$ e $z=c_2$ e due poli in $z=0$.
+\subsection*{Esempio 3 - zeri disposti sulla circonferenza unitaria}
+$H(z)=1-z^{-N}$ \'e un polinomio di ordine N, e ha radici 
+\begin{eqnarray*}
+z^N & = & re^{i(\theta+2m \pi)/N} \\
+    & = & r^{1/N}e^{i(\theta + 2m\pi)/N}
+\end{eqnarray*}
+dove $m$ \`e un intero.
+Vale
+\begin{displaymath}
+z^N=1=e^{i2m\pi}
+\end{displaymath} 
+quindi gli zeri sono in $z=e^{(i2m\pi)/N}$, per $m=0, 1, 2, \ldots, N-1$: la loro posizione \`e lungo la circonferenza di raggio unitario e centro nell'origine degli assi, a partire da $z=1$ e distanziati di un angolo $2\pi/N$.
+\section{La regione di convergenza (ROC)}
+La trasformata $z$ \`e definita solo per valori di $z$ in cui $\sum_{n=-\infty}^\infty |h(n)z^{-n}|<\infty$. \\
+Poich\'e $H(z)$ va all'infinito nei punti in cui sono definiti i poli, questi non possono trovarsi nella ROC. \\
+Per individuare la ROC \`e possibile procedere nel seguente modo:
+\begin{itemize}
+\item per i segnali di durata finita, la ROC \`e l'intero piano Z escluso 
+\begin{itemize}
+\item $z=0$ per segnali causali
+\item $z=\infty$ per segnali non causali
+\item $z=0$ e  $z=\infty$ per i segnali bilaterali
+\end{itemize}
+\item per i segnali di durata infinita, la ROC \`e
+\begin{itemize}
+\item nel caso di segnali causali, l'intero piano eccetto il cerchio di raggio $r_1$ pari alla distanza tra l'origine e il polo finito pi\`u lontano
+\item nel caso di segnali non causali, il cerchio di raggio $r_2$ pari alla distanza tra l'origine e il polo finito pi\`u vicino
+\item nel caso di segnali bilaterali, l'anello racchiuso dalle circonferenze di raggio $r_1$ e $r_2$
+\end{itemize}
+\end{itemize}
+
+La ROC \`e indispensabile per ottenere il segnale nel dominio temporale a partire dalla sua trasformata $z$, in quanto non vi \`e corrispondenza biunivoca tra un segnale e la sola forma analitica della sua trasformata $z$: segnali diversi possono avere la stessa trasformata, e quindi gli stessi poli e zeri, ma regione di convergenza diversa, come mostrato nel prossimo paragrafo.
+
+\subsection{Determinazione della ROC di un segnale causale}
+Prendiamo in considerazione il segnale
+\begin{displaymath}
+x(n)=a^n u(n)
+\end{displaymath}
+con
+\begin{displaymath}
+u(n)= \left\{
+\begin{array}{ll}
+1 & \textrm{per } n\geq0\\
+0 & \textrm{altrimenti}
+\end{array}
+\right.
+\end{displaymath}
+cio\`e l'analogo discreto del segnale gradino unitario.\\
+Calcolando la trasformata $z$ del segnale ${x(n)}$ si ricava
+\begin{displaymath}
+X(z) = \sum_{n=-\infty}^\infty a^{n}u(n)z^{-n}=\frac{1}{1-az^{-1}}=\frac{z}{z-a}
+\end{displaymath}
+Analizzando la trasformata $z$ si rileva uno zero in $z=0$ e un polo in $z=a$: la regione di convergenza \`e cos\`i definita per $|z|>|a|$, essendo il segnale causale.
+Il diagramma poli/zeri pu\`o essere ottenuto con Scilab tramite i seguenti comandi:
+\begin{verbatim}
+// zero della funzione di trasferimento del filtro
+a=.5;
+// creazione del numeratore
+Ncoeff=[0,1];
+N=poly(Ncoeff,'z','coeff');
+// creazione del denominatore
+Dcoeff=[-(a),1];
+D=poly(Dcoeff,'z','coeff');
+// creazione della funzione di trasferimento H(z)=N/D
+Ztrasf=syslin('d',N,D);
+// disegno del grafico dei poli/zeri
+xbasc(); xset("font size",4); plzr(Ztrasf);
+// disegno della circonferenza che delimita la ROC (r=1)
+xarc(-0.5,0.5,1,1,0,360*64)
+\end{verbatim}
+Come risultato otteniamo il grafico rappresentato in figura \ref{ROC_01}, in cui la ROC \`e stata evidenziata con una colorazione pi\`u scura.\\\\
+\input{images/ROC_01.tex}
+\dessin{Grafico della ROC e dei poli/zeri di un segnale causale}{ROC_01}
+
+\subsection{Determinazione della ROC di un segnale non causale}
+Prendiamo in considerazione il segnale
+\begin{displaymath}
+x(n)=-a^nu(-n-1)
+\end{displaymath}
+Calcolando la trasformata $z$ del segnale ${x(n)}$ si ricava
+\begin{eqnarray*}
+X(z) & = & -\sum_{n=-\infty}^\infty a^{n}u(-n-1)z^{-n} \\
+     & = & -\sum_{n=-\infty}^{-1} a^{n}z^{-n} \\
+     & = & 1-\sum_{n=0}^\infty (a^{1}z)^{-n} \\
+     & = & \frac{z}{z-a}
+\end{eqnarray*}
+Analizzando la trasformata $z$ si rileva uno zero in $z=0$ e un polo in $z=a$: la regione di convergenza \`e definita per $|z|<|a|$, essendo il segnale non causale. \\
+Il diagramma poli/zeri pu\`o essere ottenuto con Scilab tramite i seguenti comandi:
+\begin{verbatim}
+// zero della funzione di trasferimento del filtro
+a=.5;
+// creazione del numeratore
+Ncoeff=[0,1];
+N=poly(Ncoeff,'z','coeff');
+// creazione del denominatore
+Dcoeff=[-(a),1];
+D=poly(Dcoeff,'z','coeff');
+// creazione della funzione di trasferimento H(z)=N/D
+Ztrasf=syslin('d',N,D);
+// disegno del grafico dei poli/zeri
+xbasc(); xset("font size",4); plzr(Ztrasf);
+// disegno della circonferenza che delimita la ROC (r=1)
+xarc(-0.5,0.5,1,1,0,360*64)
+\end{verbatim}
+Come risultato otteniamo il grafico rappresentato in figura \ref{ROC_02}, in cui la ROC \`e stata evidenziata con una colorazione pi\`u scura.
+\input{images/ROC_02.tex}
+\dessin{Grafico della ROC e dei poli/zeri di un segnale non causale}{ROC_02}
+
+\subsection{Determinazione della ROC di un segnale bilatero}
+Prendiamo in considerazione il segnale
+\begin{displaymath}
+x(n)=\left(-\frac{1}{4}\right)^{n}u(n)-\left(\frac{1}{2}\right)^{n}u(-n-1)
+\end{displaymath}
+Calcoliamo la trasformata $z$ del segnale ${x(n)}$ scomponendolo in due parti:
+\begin{eqnarray*}
+\left(-\frac{1}{4}\right)^nu(n) & \longrightarrow & \frac{z}{z+\frac{1}{4}} \\
+-\left(\frac{1}{2}\right)^n u(n) & \longrightarrow & \frac{z}{z-\frac{1}{2}}
+\end{eqnarray*}
+quindi la trasformata $z$ finale risulta essere
+\begin{displaymath}
+X(z) = \frac{z}{z+\frac{1}{4}}+\frac{z}{z-\frac{1}{2}}=\frac{z(2z-\frac{1}{8})}{(z+\frac{1}{4})(z-\frac{1}{2})}
+\end{displaymath}
+Analizzando la trasformata $z$ si rilevano due zeri $\left( z=0 \textrm{ e } z=\frac{1}{16} \right)$ e due poli $\left( z=-\frac{1}{4} \textrm{ e } z=\frac{1}{2}\right)$.\\
+Utilizzando la propriet\`a di linearit\`a della trasformata $z$ possiamo concludere che la regione di convergenza \`e definita come l'intersezione delle regioni di convergenza delle due parti del segnale, quindi \`e uguale a $\frac{1}{4}<|z|<\frac{1}{2}$.\\
+Il diagramma dei poli-zeri pu\`o essere ottenuto con Scilab tramite i seguenti comandi:
+\begin{verbatim}
+// creazione del numeratore
+Ncoeff=[0,-(1/8),2];
+N=poly(Ncoeff,'z','coeff');
+// creazione del denominatore
+Dcoeff=[-(1/8),-(1/4),1];
+D=poly(Dcoeff,'z','coeff');
+// creazione della trasformata Z
+Ztrasf=syslin('d',N,D)
+// stampa del grafico
+xbasc(); xset("font size",4); plzr(Ztrasf);
+// disegno della circonferenza che delimita la ROC
+xarc(-.5,.5,1,1,0,360*64)	// Anello esterno
+xarc(-.25,.25,.5,.5,0,360*64)	// Anello interno
+\end{verbatim}
+Come risultato otteniamo il grafico rappresentato in figura \ref{ROC_03}, in cui la ROC \`e stata evidenziata con una colorazione pi\`u scura.\\
+Il diagramma del modulo e della fase del filtro pu\`o essere ottenuto con Scilab tramite i seguenti comandi:
+\begin{verbatim}
+// creazione del numeratore
+Ncoeff=[0,-(1/8),2];
+N=poly(Ncoeff,'z','coeff');
+// creazione del denominatore
+Dcoeff=[-(1/8),-(1/4),1];
+D=poly(Dcoeff,'z','coeff');
+// range di frequenze
+f=(0:.01:.5);
+// calcolo della risposta in frequenza
+hf=freq(N,D,exp(2*%pi*%i*f));
+xbasc(); xset("font size",4);
+xsetech([0,0,1,.5]); plot2d(f,(abs(hf)))
+xtitle("Risposta in frequenza del filtro")
+xsetech([0,.5,1,.5]); plot2d(f,atan(imag(hf),real(hf)));
+xtitle("Risposta in fase del filtro")
+\end{verbatim}
+Come risultato otteniamo il grafico rappresentato in figura \ref{Grafico_MagFase_3}.\\\\
+\input{images/ROC_03.tex}
+\dessin{Grafico della ROC e dei poli/zeri di un segnale bilatero}{ROC_03}
+\input{images/Grafico_MagFase_3.tex}
+\dessin{Risposta in frequenza e in fase di un filtro bilatero}{Grafico_MagFase_3}
+
+\section{Calcolo della trasformata inversa}
+La trasformata $z$ inversa permette di tornare dal piano $z$ al dominio d'origine: esistono quattro principali metodi per il calcolo dell'antitrasformata.
+\subsection{Metodo delle funzioni parziali}
+Uno dei metodi pi\`u semplici, e al tempo stesso pi\`u utili, per calcolare l'antitrasformata $z$ consiste nel decomporre la trasformata in frazioni parziali.
+Consideriamo ad esempio la trasformata
+\begin{displaymath}
+X(z)=\frac{1}{1-\frac{3}{2}z^{-1}+\frac{1}{2}z^{-2}}
+\end{displaymath}
+Fattorizziamo il denominatore in modo da ottenere
+\begin{displaymath}
+X(z)=\frac{1}{(1-z^{-1})(1-\frac{1}{2}z^{-1})}
+\end{displaymath}
+$X(z)$ pu\`o quindi essere espressa come 
+\begin{displaymath}
+X(z)=\frac{A}{1-z^{-1}}+\frac{B}{1-\frac{1}{2}z^{-1}}
+\end{displaymath}
+con $A=2$ e $B=-1$.\\
+Grazie alla propriet\`a di linearit\`a, le due frazioni possono essere invertite separatamente: sono due trasformate semplici (presenti nella tabella delle trasformata pi\`u comuni), quindi otteniamo
+\begin{displaymath}
+x(n)=Z^{-1}{X(z)}=2u(n)-\left ({\frac{1}{2}}\right )^n u(n)
+\end{displaymath}
+\subsection{Metodo della divisione}
+A partire dalla funzione di trasferimento espressa come rapporto tra numeratore e denominatore, \`e possibile eseguire la divisione polinomiale ed ottenere quindi un unico polinomio: la sua trasformata inversa \`e una successione di impulsi pesati.
+Riprendiamo l'esempio precedente: 
+\begin{displaymath}
+X(z)=\frac{1}{1-\frac{3}{2}z^{-1}+\frac{1}{2}z^{-2}}
+\end{displaymath}
+Effettuando la divisione si ottiene:
+\begin{displaymath}
+X(z)=1+ \frac{3}{2} z^{-1}+ \frac{7}{4} z^{-2}+ + \frac{15}{8} z^{-3} +\ldots
+\end{displaymath}
+la cui trasformata inversa \`e
+\begin{displaymath}
+x(n)=\delta(n)+ \frac{3}{2}\delta(n-1)+ \frac{7}{4}\delta(n-2)+ \frac{15}{8}\delta(n-3) + \ldots
+\end{displaymath}
+
+\subsection{Metodo del prodotto di Cauchy}
+Analogamente al precedente, questo metodo consente di ottenere la trasformata inversa come somma di impulsi pesati e ritardati nel tempo.
+Se $X(z)$ \`e nella forma
+\begin{displaymath}
+X(z)=\frac{b_0 + b_1 z^{-1}+\ldots + b_m z^{-m}}{a_0 + a_1 z^{-1}+\ldots + a_m z^{-m}}
+\end{displaymath}
+applicando il prodotto di Cauchy (il prodotto di convoluzione) e manipolando l'equazione in x(n) si ottiene l'equazione ricorsiva
+\begin{displaymath}
+x(n)=\frac{1}{a_0}\left[ b_n - \sum_{k=0}^{n-1} x(k) a_{n-k}\right]
+\end{displaymath}
+con $a_0 \neq 0$. \\
+Nell'esempio precedente
+\begin{displaymath}
+X(z)=\frac{1}{1-\frac{3}{2}z^{-1}+\frac{1}{2}z^{-2}}
+\end{displaymath}
+i pesi sono
+\begin{displaymath}
+b_0 = 1, a_0=1, a_1=-\frac{3}{2}, a_2=\frac{1}{2}
+\end{displaymath}
+\`E possibile applicare l'equazione ricorsiva in x(n) e ottenere
+\begin{displaymath}
+x(0)=1, x(1)=\frac{3}{2}, x(2)=\frac{7}{4}, x(3)=\frac{15}{8}, \ldots
+\end{displaymath}
+
+\subsection{Metodo di integrazione}
+Questo metodo \`e analiticamente il pi\`u complicato. \`E possibile dimostrare che esiste una relazione diretta tra l'$n-esimo$ elemento di una sequenza a tempo discreto ${h(n)}$ e la sua trasformata $z$, secondo la relazione:
+\begin{displaymath}
+x(n)=\frac{1}{2\pi i}\oint_C X(z)z^{n-1}dz
+\end{displaymath}
+dove l'integrazione \`e eseguita in senso antiorario lungo un percorso chiuso racchiudente l'origine degli assi ed interamente contenuto nella ROC.\\
+Il calcolo diretto dell'integrale \`e spesso difficile, quindi viene utilizzato un secondo risultato, il \emph{teorema dei residui}:
+\begin{displaymath}
+h(n)=\sum_{i=1}^{N} \textrm{Res}[H(z)z^{n-1} \textrm{ nel polo }p_i]
+\end{displaymath}
+dove $\textrm{Res}[\cdot]$ \`e il \emph{residuo}.
+Per definire il residuo, sia $H(z)z^{n-1}$ una funzione razionale in $z$ con un polo di ordine $m$ in $z=z_0$:
+\begin{displaymath}
+H(z)z^{n-1}=\frac{P(z)}{(z-z_0)^m}
+\end{displaymath}
+Il residuo di $H(z)z^{n-1}$ in $z=z_0$ \`e definito come
+\begin{displaymath}
+\textrm{Res}[H(z)z^{n-1} \textrm{ nel polo }p_i]=\left. \frac{1}{(m-1)!}\frac{d^{m-1}P(z)}{dz^{m-1}}\right |_{z=z_0}
+\end{displaymath}

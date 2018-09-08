@@ -1,0 +1,722 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox:  0 0 300 212
+%%
+%%Scilab Postscript File (Copyright 1995-2003 J.Ph Chancelier Enpc/cermics)
+%%EndComments
+/saved save def 
+/$pictdict 100 dict def
+$pictdict begin
+
+/dogrey
+{ /Arraybox exch def
+	/Arraygrey exch def
+	/nargs exch def 
+	/func exch cvx def
+	Arraybox 0 nargs getinterval Arraygrey 0 get func 
+	1 1 Arraygrey length 1 sub 
+	{/i exch def
+	Arraybox i nargs mul nargs getinterval 
+	Arraygrey i get func
+	}for
+} def
+%--------------------------------------------
+% [x y width height] nivgris drawbox 
+% si niv gris > 1.0 alors on fait un stroke 
+% sans closepath 
+%--------------------------------------------
+
+/drawpoly
+	{/glev exch def /Ar exch def
+	newpath
+	Ar 0 get Ar 1 get moveto 
+	2 2 Ar length 1 sub 
+	{/i exch def
+	Ar i get Ar i 1 add get absolu {lineto} {rlineto} ifelse
+	}for
+	glev -1 le 
+	{ % filling the polygon with current pattern ( gray or color)
+	  closepath gsave glev neg 1 sub WhiteLev 2 add lmin 0 lmax Setgray eofill grestore }
+	{ glev 1 ge 
+	   { % drawing the polygon with current dash style or color 
+	     % XXXXX : a voir c'est pas clair il faudrait sauver 
+	     % and filling it with other color (glev) 
+	     closepath gsave glev 1 sub WhiteLev 2 add lmin 0 lmax xsetgray
+		 eofill grestore stroke }
+	   {% drawing the polygon with current style 
+	    closeflag {closepath} if stroke} 
+	ifelse }
+	ifelse 
+} def 
+
+
+/drawbox 
+	{/glev exch def /Ar exch def 
+	/x Ar 0 get def /y Ar 1 get def 
+	/w Ar 2 get def /h Ar 3 get def 
+	newpath
+	x y moveto
+	x w add y lineto
+	x w add y h add lineto
+	x y h add lineto
+	glev 1 ge 
+	{ % filling 
+	 closepath gsave glev 1 sub WhiteLev 2 add lmin 0 lmax Setgray eofill 
+		grestore}
+	{ 
+	  % drawing 
+	  glev -1 le 
+	  {
+    	  closepath gsave glev neg 1 sub WhiteLev 2 add lmin 0 lmax xsetgray
+		 stroke grestore  }
+	  { closepath stroke} ifelse 
+	} ifelse
+} def 
+
+%--------------------------------------------
+% [x y width height] clearzone
+%--------------------------------------------
+/clearzone
+        {/Ar exch def
+        /x Ar 0 get def /y Ar 1 get def
+        /w Ar 2 get def /h Ar 3 get def
+        newpath
+        x y moveto
+        x w add y lineto
+        x w add y h add lineto
+        x y h add lineto
+	closepath gsave background Setcolor eofill grestore
+} def
+
+%------------------------------------------------------
+% polyline stroke or polygon fill or both 
+%------------------------------------------------------
+/absolu true def 
+/closeflag false def 
+
+/lmin { /y exch def /x exch def x y le { x  } {  y  } ifelse } def
+/lmax { /y exch def /x exch def x y le { y } {  x } ifelse } def 
+
+
+/drawpoly
+	{/glev exch def /Ar exch def
+	newpath
+	Ar 0 get Ar 1 get moveto 
+	2 2 Ar length 1 sub 
+	{/i exch def
+	Ar i get Ar i 1 add get absolu {lineto} {rlineto} ifelse
+	}for
+	glev -1 le 
+	{ % filling the polygon with current pattern ( gray or color)
+	  closepath gsave glev neg 1 sub WhiteLev 2 add lmin 0 lmax Setgray eofill grestore }
+	{ glev 1 ge 
+	   { % drawing the polygon with current dash style or color 
+	     % XXXXX : a voir c'est pas clair il faudrait sauver 
+	     % and filling it with other color (glev) 
+	     closepath gsave glev 1 sub WhiteLev 2 add lmin 0 lmax Setgray 
+		 eofill grestore stroke }
+	   {% drawing the polygon with current style 
+	    closeflag {closepath} if stroke} 
+	ifelse }
+	ifelse 
+} def 
+
+%------------------------------------------------------
+% segments non connectes 
+%------------------------------------------------------
+
+/drawsegs
+	{/glev exch def /Ar exch def
+	% when  b&w is used drawsegs uses dash not gray levels 
+	newpath
+	Ar 0 get Ar 1 get moveto Ar 2 get Ar 3 get lineto 
+	gsave glev xsetgray stroke grestore
+	4 4 Ar length 3 sub 
+	{/i exch def
+	newpath 
+	Ar i get Ar i 1 add get moveto
+	Ar i 2 add get Ar i 3 add get lineto 
+	gsave glev xsetgray stroke grestore
+	}for
+} def 
+
+
+%------------------------------------------------------
+% unconected arrows
+%-----------------------------------------------------
+
+/drawarrows
+	{/arsize10 exch def /Ar exch def
+	Ar 0 get  Ar 1 get Ar 2 get Ar 3 get arsize10 drawarrow
+	4 4 Ar length 3 sub 
+	{/i exch def
+	Ar i get Ar i 1 add get  Ar i 2 add get  Ar i 3 add get arsize10 
+	drawarrow
+	}for
+} def 
+		
+/cos20 20 cos def
+/sin20 20 sin def
+
+/drawarrow                                
+  { 
+      /arsize exch 10 div def 
+      /tipy exch def /tipx exch def       
+      /taily exch def /tailx exch def
+      /dx tipx tailx sub  def               
+      /dy tipy taily sub  def               
+      newpath tipx tipy moveto tailx taily lineto stroke   
+      /norme dx dx mul dy dy mul add sqrt def 
+      norme 1.e-8 ge 
+	{
+	 arsize dx mul norme div /dx1 exch def 
+	 arsize dy mul norme div /dy1 exch def 
+	 /depx tipx cos20 dx1 mul add def 
+	/depy  tipy cos20 dy1 mul add def 
+	newpath depx depy moveto 
+	cos20 neg dx1 mul sin20 dy1 mul sub depx add
+	sin20 dx1  mul cos20 dy1 mul sub depy add lineto 
+	cos20 neg dx1 mul sin20 dy1 mul add  depx add
+	sin20 neg dx1 mul cos20 dy1 mul sub depy add lineto closepath 
+	fill
+	} {} ifelse 
+  } def
+
+
+%------------------------------------------------------
+% cercle ou portions de cercle 
+% attention argument (x y w h angl1*64 angl2*64 )
+% devrait tracer une ellipse a modifier donc 
+%------------------------------------------------------
+
+/fillarc
+	{/glev exch def /Ar exch def
+	/cx Ar 0 get Ar 2 get 2 div add def 
+	/cy Ar 1 get Ar 3 get 2 div add def 
+	Ar 2 get 0 eq {} {
+	/hom Ar 3 get Ar 2 get div def 
+	/Cmsave1 matrix def Cmsave1 currentmatrix pop
+	%-- on change de transformation pour faire homothetie en (x,y) 
+	cx cy [1 0 0 hom 0 0 ] transform
+	/t1 exch neg cy add def 
+	/t2 exch neg cx add def 
+	[1 0 0 hom t2 t1 ] concat 
+	glev WhiteLev le
+	{ % filling 
+	newpath
+	cx cy moveto 
+	cx cy Ar 2 get 2 div Ar 5 get Ar 4 get add  64 div neg
+	 Ar 4 get 64 div neg  arc closepath
+	gsave glev Setgray eofill grestore}
+	{
+	%drawing with current dash or color unclosed path 
+	newpath
+	cx cy Ar 2 get 2 div Ar 5 get Ar 4 get add 64 div neg Ar 4 get 64 div neg arc
+	  stroke} ifelse 
+	Cmsave1 setmatrix } ifelse
+} def 
+
+/drawarc
+	{/glev exch def /Ar exch def
+	/cx Ar 0 get Ar 2 get 2 div add def 
+	/cy Ar 1 get Ar 3 get 2 div add def 
+	Ar 2 get 0 eq {} {
+	/hom Ar 3 get Ar 2 get div def 
+	/Cmsave1 matrix def Cmsave1 currentmatrix pop
+	%-- on change de transformation pour faire homothetie en (x,y) 
+	cx cy [1 0 0 hom 0 0 ] transform
+	/t1 exch neg cy add def 
+	/t2 exch neg cx add def 
+	[1 0 0 hom t2 t1 ] concat 
+	newpath
+	cx cy Ar 2 get 2 div Ar 5 get Ar 4 get add 64 div neg Ar 4 get 64 div neg arc
+	closepath glev xsetgray stroke
+	Cmsave1 setmatrix } ifelse
+} def 
+
+
+%------------------------------------------------------
+% centred hard mark 
+%------------------------------------------------------
+
+% x y str ShowCString 
+% on fait un show mais string est centre autour du point (x,y) 
+
+/ShowCString { /str exch def /y exch def /x exch def 
+ newpath 
+ x y moveto 
+ str true charpath flattenpath pathbbox 
+ /y2 exch def /x2 exch def /y1 exch def /x1 exch def 
+ x 2 mul x2 x1 add 2 div sub 
+ y 2 mul y2 y1 add 2 div sub moveto str show 
+ } def 
+
+/drawpolymark {/glev exch def /Ar exch def 
+	Ar 0 get Ar 1 get HardMark ShowCString 
+	2 2 Ar length 1 sub 
+	{/i exch def
+	Ar i get Ar i 1 add get HardMark ShowCString
+	}for
+} def 
+
+%---------------------------------------------------
+% chaines de caracteres 
+%---------------------------------------------------
+/FBox {/Ar exch def /rot exch def /str exch def /y exch def /x exch def 
+ newpath Ar 0 get Ar 1 get moveto 
+	/sina rot sin def /cosa rot cos def 
+	/-sina sina neg def 
+	[cosa -sina sina cosa 0 0 ] CtmModif
+ Ar 2 get 0 rlineto 0 Ar 3 get neg rlineto Ar 2 get neg 0 rlineto 
+ 0 Ar 3 get  rlineto  stroke CtmRestore 
+ x y str rot ShowRotate 
+ } def 
+
+% x y str ang Showrotate 
+% inverse du sens trigo 
+
+/ShowRotate { /ang exch def /str exch def 
+	/y exch def /x exch def 
+	x y moveto 
+	/sina ang sin def /cosa ang cos def 
+	/-sina 0 sina sub def 
+	[cosa -sina sina cosa 0 0 ] CtmModif
+	str show 
+	CtmRestore 
+} def 
+
+/HardMark (0) def 
+
+%(Chaine de caracteres) x y flag angle [arfbox] Show
+
+/Show { /Ar exch def 
+	/rot exch def /flag exch def /y exch def /x exch def /str exch def 
+	flag 1 eq 
+	{x y str rot Ar FBox}
+	{x y str rot ShowRotate } ifelse} def 
+
+/L {/y2 exch def /x2 exch def /y1 exch def /x1 exch def 
+    newpath x1 y1 moveto x2 y2 lineto stroke } def 
+
+%---------------------------------------------------------
+% drawing an axis 
+% angle [nsep1,nsep2] ,[siz1,siz2,coeff] [x0,y0] drawaxis",
+%---------------------------------------------------------
+
+/drawaxis {/XX exch def /Arsize exch def /Arsep exch def /ang exch def 
+	/Cmsave1 matrix def Cmsave1 currentmatrix pop
+	/sina ang sin def /cosa ang cos def /-sina sina neg def 
+	/x XX 0 get def /y XX 1 get def
+	%-- on change de transformation pour tourner autour de (x,y) 
+	x y [cosa sina -sina cosa 0 0 ] transform
+	/t1 exch neg y add def 
+	/t2 exch neg x add def 
+	[cosa sina -sina cosa t2 t1 ] concat 
+	newpath x y moveto 0 Arsize 1 get Arsize 2 get mul rlineto
+	stroke 
+	0 1 Arsep 1 get 1 sub
+	{
+	 % i don't want the value of the for indice 
+	 pop
+	newpath 
+	x y moveto 
+	0 1 Arsep 0 get 1 sub
+		{
+		 % i don't want the value of the for indice 
+		 pop
+		 Arsize 0 get 0  rlineto
+		 0 Arsize 1 get rlineto 
+	 	0 Arsize 1 get  neg rlineto }
+		for 
+	currentpoint /y exch def /x exch def 
+	stroke 
+	newpath x y moveto 0 Arsize 1 get Arsize 2 get mul rlineto
+	stroke }
+	for 
+	Cmsave1 setmatrix } def 
+
+%---------------------------------------------------------
+% change and restore CTM
+%---------------------------------------------------------
+
+/CtmModif {
+	/arg exch def 
+	/Cmsave matrix def 
+	Cmsave currentmatrix pop
+	[1 0 0 -1 0 0 ] concat 
+	arg concat 
+} def 
+
+/CtmRestore { Cmsave setmatrix } def 
+
+/Thickness { /th exch def th 0 le {/th 0.1 def} if th setlinewidth} def 
+
+/WhiteLev 15 def
+
+/Setgray { WhiteLev div setgray} def 
+
+/fillsolid { 0 setgray } def 
+
+%--------------------------------------
+% clip zones ( rectangle ) 
+%-------------------------------------
+
+/setclipzone {initclip 
+	/h exch def /w exch def /y exch def /x exch def 
+	newpath x y moveto w 0 rlineto 0 h rlineto w neg 0 rlineto 
+	0 h neg rlineto closepath clip} def 
+
+%------------------
+% to change the position of a picture 
+%------------------
+/cm{28.346457 mul}def
+
+/DesPosi { /YH exch def /XW exch def /YP exch def /XP exch def 
+	XP cm YP cm neg translate 
+	XW cm 6000 div YH cm 4240 div  scale } def 
+
+0 setlinecap 
+2 setlinejoin 
+1 setlinewidth
+
+%-- Color database 
+/ColorR [0.000000 0.000000 0.000000 0.529412 0.498039 0.133333 0.000000 0.878431 0.000000 1.000000 1.000000 1.000000 0.933333 1.000000 1.000000 0.960784 1.000000 ] def
+/ColorG [0.000000 0.000000 0.000000 0.807843 1.000000 0.545098 1.000000 1.000000 1.000000 0.647059 0.000000 0.000000 0.509804 1.000000 0.843137 0.960784 1.000000 ] def
+/ColorB [0.000000 0.501961 1.000000 0.921569 0.831373 0.133333 0.000000 1.000000 1.000000 0.000000 0.000000 1.000000 0.933333 0.000000 0.000000 0.862745 1.000000 ] def
+
+/Setcolor {/i exch def ColorR i get ColorG i get ColorB i get setrgbcolor } def
+
+% to multiply all the fontsizes by a factor  scf
+/scf 1.0 def
+
+% set dash styles : max number is hardcoded to 6 
+% /DashTab [[] [20 50 20 50]  [50 20 50 20]   [50 30 20 30]  [80 30 20 30]  [110 30 20 30]  [110 30 50 30]] def 
+/DashTab [[]  [50 20 50 20]   [50 30 20 30]  [80 30 20 30]  [110 30 20 30]  [110 30 50 30]] def 
+/Setdash {/i exch  0 lmax 5 lmin def i  DashTab i get 0 setdash } def 
+
+% style for drawing: color gray or dash 
+/xsetgray { usecolor 0 le {Setdash} {Setgray} ifelse } def 
+
+% default value for colormode 
+
+/usecolor 1 def 
+
+% changing fonts encoding 
+
+/Courier findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding ISOLatin1Encoding def
+  currentdict
+  end
+/Courier exch definefont pop
+
+/Times-Roman findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding ISOLatin1Encoding def
+  currentdict
+  end
+/Times-Roman exch definefont pop
+
+/Times-Bold findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding ISOLatin1Encoding def
+  currentdict
+  end
+/Times-Bold exch definefont pop
+
+
+/Times-BoldItalic findfont
+dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse} forall
+  /Encoding ISOLatin1Encoding def
+  currentdict
+  end
+/Times-BoldItalic exch definefont pop
+
+%------ End Main Program ------%
+% XP YP XW YW DesPosi in the following code 
+% will output the picture in the rectangle defined by 
+% upper left point (XP,YP) wide :XW Height: YW
+% the coordinates are given in centimeter and 
+% are the (0,0) point is the down-left point of the paper 
+
+
+
+/ColorR [0.000000 
+0.000000 0.000000 0.000000 1.000000 1.000000 1.000000 1.000000 0.000000 0.000000 0.000000 
+0.529412 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.564706 0.690196 0.815686 
+0.564706 0.690196 0.815686 0.501961 0.627451 0.752941 1.000000 1.000000 1.000000 1.000000 
+1.000000 0.0 1.0] def
+/ColorG [0.000000 
+0.000000 1.000000 1.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 
+0.807843 0.564706 0.690196 0.815686 0.564706 0.690196 0.815686 0.000000 0.000000 0.000000 
+0.000000 0.000000 0.000000 0.188235 0.250980 0.376471 0.501961 0.627451 0.752941 0.878431 
+0.843137 0.0 1.0] def
+/ColorB [0.000000 
+1.000000 0.000000 1.000000 0.000000 1.000000 0.000000 1.000000 0.564706 0.690196 0.815686 
+1.000000 0.000000 0.000000 0.000000 0.564706 0.690196 0.815686 0.000000 0.000000 0.000000 
+0.564706 0.690196 0.815686 0.000000 0.000000 0.000000 0.501961 0.627451 0.752941 0.878431 
+0.000000 0.0 1.0] def
+%scipos_w=3000
+%scipos_h=2120
+% Dessin en bas a gauche de taille 3000,2120
+[0.5 10 div 0 0 0.5 10 div neg  0 2120 10 div] concat
+% Init driver 
+/PaintBackground {WhiteLev 2 add background eq {}{ (drawbox) 4 [background 1 add] [0 0 6000 4240] dogrey}ifelse } def
+5 Thickness
+% 3 setalufunction
+-1 -1 200000 200000 setclipzone
+[] 0 setdash
+/Times-Roman findfont 100 scf mul scalefont setfont
+fillsolid
+[] 0 setdash
+0 Setcolor
+/background 33 def PaintBackground
+%--use color 1 
+fillsolid
+[] 0 setdash
+0 Setcolor
+/WhiteLev 31 def
+/Setgray {/i exch def ColorR i get ColorG i get ColorB i get setrgbcolor } def 
+/Setcolor {/i exch def ColorR i get ColorG i get ColorB i get setrgbcolor } def 
+/usecolor 1 def 
+%--end use color 1 
+% End init driver 
+/WhiteLev 31 def
+/WhiteLev 31 def
+/ColorR [0.000000 
+0.000000 0.000000 0.000000 1.000000 1.000000 1.000000 1.000000 0.000000 0.000000 0.000000 
+0.529412 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.564706 0.690196 0.815686 
+0.564706 0.690196 0.815686 0.501961 0.627451 0.752941 1.000000 1.000000 1.000000 1.000000 
+1.000000 0.0 1.0] def
+/ColorG [0.000000 
+0.000000 1.000000 1.000000 0.000000 0.000000 1.000000 1.000000 0.000000 0.000000 0.000000 
+0.807843 0.564706 0.690196 0.815686 0.564706 0.690196 0.815686 0.000000 0.000000 0.000000 
+0.000000 0.000000 0.000000 0.188235 0.250980 0.376471 0.501961 0.627451 0.752941 0.878431 
+0.843137 0.0 1.0] def
+/ColorB [0.000000 
+1.000000 0.000000 1.000000 0.000000 1.000000 0.000000 1.000000 0.564706 0.690196 0.815686 
+1.000000 0.000000 0.000000 0.000000 0.564706 0.690196 0.815686 0.000000 0.000000 0.000000 
+0.564706 0.690196 0.815686 0.000000 0.000000 0.000000 0.501961 0.627451 0.752941 0.878431 
+0.000000 0.0 1.0] def
+%Latex:\setlength{\unitlength}{0.05pt}
+%Latex:\begin{picture}(6000,4240)(200,0)
+/background 33 def PaintBackground
+/background 33 def PaintBackground
+/background 33 def PaintBackground
+32 Setcolor
+5 Thickness
+[] 0 setdash
+32 Setcolor
+ (drawbox) 4 [ 0]
+[750 530 4500 3180 
+] dogrey 
+32 Setcolor
+(0.0) 688 3869 0  0.00 [688 3774 125 94] Show
+%Latex:\myput{688}{371}{5}{0.0}
+ (drawsegs) 4 [ 32]
+[750 3710 750 3773 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[1200 3710 1200 3741 
+] dogrey 
+(0.1) 1588 3869 0  0.00 [1588 3774 125 94] Show
+%Latex:\myput{1588}{371}{5}{0.1}
+ (drawsegs) 4 [ 32]
+[1650 3710 1650 3773 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[2100 3710 2100 3741 
+] dogrey 
+(0.2) 2488 3869 0  0.00 [2488 3774 125 94] Show
+%Latex:\myput{2488}{371}{5}{0.2}
+ (drawsegs) 4 [ 32]
+[2550 3710 2550 3773 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[3000 3710 3000 3741 
+] dogrey 
+(0.3) 3388 3869 0  0.00 [3388 3774 125 94] Show
+%Latex:\myput{3388}{371}{5}{0.3}
+ (drawsegs) 4 [ 32]
+[3450 3710 3450 3773 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[3900 3710 3900 3741 
+] dogrey 
+(0.4) 4288 3869 0  0.00 [4288 3774 125 94] Show
+%Latex:\myput{4288}{371}{5}{0.4}
+ (drawsegs) 4 [ 32]
+[4350 3710 4350 3773 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[4800 3710 4800 3741 
+] dogrey 
+(0.5) 5188 3869 0  0.00 [5188 3774 125 94] Show
+%Latex:\myput{5188}{371}{5}{0.5}
+ (drawsegs) 4 [ 32]
+[5250 3710 5250 3773 
+] dogrey 
+(0) 628 3746 0  0.00 [628 3651 50 94] Show
+%Latex:\myput{628}{494}{5}{0}
+ (drawsegs) 4 [ 32]
+[750 3710 690 3710 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[750 3483 720 3483 
+] dogrey 
+(1) 628 3292 0  0.00 [628 3197 50 94] Show
+%Latex:\myput{628}{948}{5}{1}
+ (drawsegs) 4 [ 32]
+[750 3256 690 3256 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[750 3029 720 3029 
+] dogrey 
+(2) 628 2837 0  0.00 [628 2742 50 94] Show
+%Latex:\myput{628}{1403}{5}{2}
+ (drawsegs) 4 [ 32]
+[750 2801 690 2801 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[750 2574 720 2574 
+] dogrey 
+(3) 628 2383 0  0.00 [628 2288 50 94] Show
+%Latex:\myput{628}{1857}{5}{3}
+ (drawsegs) 4 [ 32]
+[750 2347 690 2347 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[750 2120 720 2120 
+] dogrey 
+(4) 628 1929 0  0.00 [628 1834 50 94] Show
+%Latex:\myput{628}{2311}{5}{4}
+ (drawsegs) 4 [ 32]
+[750 1893 690 1893 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[750 1666 720 1666 
+] dogrey 
+(5) 628 1475 0  0.00 [628 1380 50 94] Show
+%Latex:\myput{628}{2765}{5}{5}
+ (drawsegs) 4 [ 32]
+[750 1439 690 1439 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[750 1211 720 1211 
+] dogrey 
+(6) 628 1020 0  0.00 [628 925 50 94] Show
+%Latex:\myput{628}{3220}{5}{6}
+ (drawsegs) 4 [ 32]
+[750 984 690 984 
+] dogrey 
+ (drawsegs) 4 [ 32]
+[750 757 720 757 
+] dogrey 
+(7) 628 566 0  0.00 [628 471 50 94] Show
+%Latex:\myput{628}{3674}{5}{7}
+ (drawsegs) 4 [ 32]
+[750 530 690 530 
+] dogrey 
+[] 0 setdash
+32 Setcolor
+0 Setcolor
+5 Thickness
+[] 0 setdash
+750 530 4500 3180 setclipzone
+/closeflag false def
+ (drawpoly) 200 [ 0]
+[750 681 795 694 841 729 886 786 932 861 977 949 1023 1046 1068 1150 1114 1256 1159 1362 
+1205 1466 1250 1568 1295 1665 1341 1757 1386 1845 1432 1928 1477 2007 1523 2081 1568 2150 1614 2215 
+1659 2277 1705 2334 1750 2389 1795 2440 1841 2488 1886 2534 1932 2577 1977 2618 2023 2657 2068 2694 
+2114 2729 2159 2763 2205 2794 2250 2825 2295 2854 2341 2881 2386 2908 2432 2934 2477 2958 2523 2982 
+2568 3004 2614 3026 2659 3047 2705 3067 2750 3087 2795 3106 2841 3124 2886 3142 2932 3159 2977 3176 
+3023 3192 3068 3207 3114 3223 3159 3238 3205 3252 3250 3266 3295 3280 3341 3294 3386 3307 3432 3320 
+3477 3332 3523 3345 3568 3357 3614 3369 3659 3380 3705 3392 3750 3403 3795 3414 3841 3425 3886 3436 
+3932 3446 3977 3456 4023 3467 4068 3477 4114 3487 4159 3497 4205 3506 4250 3516 4295 3525 4341 3535 
+4386 3544 4432 3553 4477 3562 4523 3571 4568 3580 4614 3589 4659 3598 4705 3607 4750 3616 4795 3625 
+4841 3633 4886 3642 4932 3650 4977 3659 5023 3668 5068 3676 5114 3685 5159 3693 5205 3702 5250 3710 
+] dogrey 
+0 Setcolor
+/absolu true def
+-1 -1 200000 200000 setclipzone
+32 Setcolor
+/Courier findfont 100 scf mul scalefont setfont
+32 Setcolor
+/Courier findfont 100 scf mul scalefont setfont
+(frequenza) 5355 3737 0  0.00 [5355 3637 540 100] Show
+%Latex:\myput{5355}{503}{5}{frequenza}
+32 Setcolor
+/Courier findfont 100 scf mul scalefont setfont
+(|H\(w\)|) 570 292 0  0.00 [570 192 360 100] Show
+%Latex:\myput{570}{3948}{5}{|H(w)|}
+2 Setcolor
+5 Thickness
+[50 30 20 30 ] 0 setdash
+750 530 4500 3180 setclipzone
+/closeflag false def
+ (drawpoly) 202 [ 0]
+[1875 3710 1875 3256 1875 2801 1875 2347 1875 1893 1875 1439 1875 984 1875 530 1875 76 1875 -379 
+1875 -833 1875 -1287 1875 -1741 1875 -2196 1875 -2650 1875 -3104 1875 -3559 1875 -4013 1875 -4467 1875 -4921 
+1875 -5376 1875 -5830 1875 -6284 1875 -6739 1875 -7193 1875 -7647 1875 -8101 1875 -8556 1875 -9010 1875 -9464 
+1875 -9919 1875 -10373 1875 -10827 1875 -11281 1875 -11736 1875 -12190 1875 -12644 1875 -13099 1875 -13553 1875 -14007 
+1875 -14461 1875 -14916 1875 -15370 1875 -15824 1875 -16279 1875 -16733 1875 -17187 1875 -17641 1875 -18096 1875 -18550 
+1875 -19004 1875 -19459 1875 -19913 1875 -20367 1875 -20821 1875 -21276 1875 -21730 1875 -22184 1875 -22639 1875 -23093 
+1875 -23547 1875 -24001 1875 -24456 1875 -24910 1875 -25364 1875 -25819 1875 -26273 1875 -26727 1875 -27181 1875 -27636 
+1875 -28090 1875 -28544 1875 -28999 1875 -29453 1875 -29907 1875 -30361 1875 -30816 1875 -31270 1875 -31724 1875 -32179 
+1875 -32633 1875 -33087 1875 -33541 1875 -33996 1875 -34450 1875 -34904 1875 -35359 1875 -35813 1875 -36267 1875 -36721 
+1875 -37176 1875 -37630 1875 -38084 1875 -38539 1875 -38993 1875 -39447 1875 -39901 1875 -40356 1875 -40810 1875 -41264 
+1875 -41719 
+] dogrey 
+2 Setcolor
+/absolu true def
+-1 -1 200000 200000 setclipzone
+32 Setcolor
+/Courier findfont 100 scf mul scalefont setfont
+[] 0 setdash
+32 Setcolor
+32 Setcolor
+(frequenza di taglio) 3450 4227 0  0.00 [3450 4127 1140 100] Show
+%Latex:\myput{3450}{13}{5}{frequenza di taglio}
+32 Setcolor
+[] 0 setdash
+2 Setcolor
+/closeflag false def
+ (drawpoly) 4 [ 0]
+[3000 4190 3375 4190 
+] dogrey 
+2 Setcolor
+/absolu true def
+[] 0 setdash
+32 Setcolor
+[50 30 20 30 ] 0 setdash
+2 Setcolor
+4 Setcolor
+5 Thickness
+[50 30 20 30 ] 0 setdash
+750 530 4500 3180 setclipzone
+/closeflag false def
+ (drawpoly) 202 [ 0]
+[3000 3710 3000 3256 3000 2801 3000 2347 3000 1893 3000 1439 3000 984 3000 530 3000 76 3000 -379 
+3000 -833 3000 -1287 3000 -1741 3000 -2196 3000 -2650 3000 -3104 3000 -3559 3000 -4013 3000 -4467 3000 -4921 
+3000 -5376 3000 -5830 3000 -6284 3000 -6739 3000 -7193 3000 -7647 3000 -8101 3000 -8556 3000 -9010 3000 -9464 
+3000 -9919 3000 -10373 3000 -10827 3000 -11281 3000 -11736 3000 -12190 3000 -12644 3000 -13099 3000 -13553 3000 -14007 
+3000 -14461 3000 -14916 3000 -15370 3000 -15824 3000 -16279 3000 -16733 3000 -17187 3000 -17641 3000 -18096 3000 -18550 
+3000 -19004 3000 -19459 3000 -19913 3000 -20367 3000 -20821 3000 -21276 3000 -21730 3000 -22184 3000 -22639 3000 -23093 
+3000 -23547 3000 -24001 3000 -24456 3000 -24910 3000 -25364 3000 -25819 3000 -26273 3000 -26727 3000 -27181 3000 -27636 
+3000 -28090 3000 -28544 3000 -28999 3000 -29453 3000 -29907 3000 -30361 3000 -30816 3000 -31270 3000 -31724 3000 -32179 
+3000 -32633 3000 -33087 3000 -33541 3000 -33996 3000 -34450 3000 -34904 3000 -35359 3000 -35813 3000 -36267 3000 -36721 
+3000 -37176 3000 -37630 3000 -38084 3000 -38539 3000 -38993 3000 -39447 3000 -39901 3000 -40356 3000 -40810 3000 -41264 
+3000 -41719 
+] dogrey 
+4 Setcolor
+/absolu true def
+-1 -1 200000 200000 setclipzone
+%Latex:\end{picture}
+ showpage
+
+ end saved restore 
+
+
